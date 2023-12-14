@@ -1,0 +1,3 @@
+web: gunicorn app:app
+
+<!-- This line tells Heroku to use gunicorn as the web server and that your Flask app is located in a file named app.py with the Flask instance named app. -->
