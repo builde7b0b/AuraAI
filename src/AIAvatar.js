@@ -12,7 +12,7 @@ const AiAvatar = ({ children, response }) => {
       display: 'flex',
       flexDirection: 'row', // Stack the avatar and the output box horizontally
       alignItems: 'center',
-      height: '60vh',
+      // height: '60vh',
     }}>
       {/* AI Avatar Video aligned to the left */}
       <div style={{
@@ -56,7 +56,7 @@ const AiAvatar = ({ children, response }) => {
 }}>
   {response && <p>{response.response}</p>}
   {children}
-  {!response && <p>Ask Me Anything...</p>} {/* This line is modified */}
+  {!response && <p>Ask Me Anything...Type Your Question Below.</p>} {/* This line is modified */}
 </Typography>
 
 

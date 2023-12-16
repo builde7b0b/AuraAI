@@ -78,7 +78,7 @@ const ChatArea = ({setResponse}) => {
     flexDirection: 'column',
     justifyContent: 'flex-start', // Align content to the top
     alignItems: 'center',
-    position: 'relative',
+    // position: 'relative',
     paddingTop: '10px', // Add some padding at the top
       }}
     >
