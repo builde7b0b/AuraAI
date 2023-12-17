@@ -4,6 +4,7 @@ import AiAvatarImg from './Avatar.png';
 import AiAvatarAnimation from './SidebarAnim.mp4';
 import { Input, Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import { useEffect } from 'react';
 
 const AiAvatar = ({ children}) => {
   const theme = useTheme();
@@ -14,6 +15,46 @@ const AiAvatar = ({ children}) => {
   const [response, setResponse] = useState('');
   // const [prompt, setPrompt] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
+  const latestMessageRef = useRef(null);
+
+
+  // Function to format each message
+  const formatMessage = (message) => {
+    // Splitting the message into individual sections based on " - "
+    return message.text.split(' - ').map((section, idx, array) => {
+      // Splitting the section further into parts based on line breaks
+      const parts = section.split(/\n+/);
+  
+      return (
+        <React.Fragment key={idx}>
+          {parts.map((part, partIndex) => {
+            // Check if the part is a title (contains ":")
+            const isTitle = part.includes(':');
+  
+            return (
+              <Typography key={partIndex} component="div" sx={{ 
+                fontWeight: isTitle ? 'bold' : 'normal', 
+                color: '#4A90E2', 
+                marginBottom: isTitle ? 1 : 2 
+              }}>
+                {part}
+              </Typography>
+            );
+          })}
+          {/* Adding extra space between sections */}
+          {idx < array.length - 1 && <div style={{ marginBottom: '16px' }} />}
+        </React.Fragment>
+      );
+    });
+  };
+  
+  
+  
+  
+  
+  
+  
+  
 
   const handleQuestionChange = (event) => {
     setQuestion(event.target.value);
@@ -49,8 +90,8 @@ const AiAvatar = ({ children}) => {
   };
 
   const askQuestion = async (question, signal) => {
-    const response = await fetch('http://localhost:5000/ask', {
-      // const response = await fetch('https://aura-ai-7089dd4d6870.herokuapp.com/ask', {
+    // const response = await fetch('http://localhost:5000/ask', {
+      const response = await fetch('https://aura-ai-7089dd4d6870.herokuapp.com/ask', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -64,6 +105,7 @@ const AiAvatar = ({ children}) => {
     // Logic to convert name to numbers and select a Tarot card
     abortController.current = new AbortController();
     setIsLoading(true);
+    handleMenuClose();
 
     // add the user's action
     const userAction = { type: 'user', text: "Requesting a Daily Tarot Reading" };
@@ -86,6 +128,7 @@ const AiAvatar = ({ children}) => {
 
   const handleYesNoQuestion = async () => {
     setIsLoading(true);
+    handleMenuClose();
     const prompt = `Prepare to Answer a Pendulum style question from the user by prompting them to enter a question, then answer either yes or no randomly with a disclaimer that this is not any kind of professional advice and is for entertainment purposes only.
     `;
     const response = await askQuestion(prompt);
@@ -96,16 +139,19 @@ const AiAvatar = ({ children}) => {
   };
 
   const getBirthChart = async () => {
-    //prompt the user for their birth details 
+   
+    const birthDetails = await getUserInput();
+    
+
+    if(birthDetails){
+       //prompt the user for their birth details 
     const userBirthDetails = `Please enter your birth date, time and location in the following format: MM/DD/YYYY HH:MM AM/PM City, State, Country`;
 
     //add this request to the conversation
     setConversation(prev => [...prev, { type: 'user', text: userBirthDetails}]);
-
-    const birthDetails = await getUserInput();
-
-    abortController.current = new AbortController();
+      abortController.current = new AbortController();
     setIsLoading(true);
+    handleMenuClose();
 
     const prompt = `Generate a detailed astrological birth chart analysis based on the following details:
     - Birth Date: ${birthDetails.date}
@@ -122,6 +168,11 @@ const AiAvatar = ({ children}) => {
     } finally {
       setIsLoading(false);
     }
+
+    }
+    
+
+    
   }
 
   const handleUserInputSubmit = (inputData) => {
@@ -151,6 +202,12 @@ const AiAvatar = ({ children}) => {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
+  useEffect(() => {
+    if (latestMessageRef.current){
+      latestMessageRef.current.scrollIntoView({ smooth: true });
+    }
+  }, [conversation]);
 
 
   return (
@@ -190,17 +247,21 @@ const AiAvatar = ({ children}) => {
         flexShrink: 0, // Prevents the output box from shrinking
       }}>
         {conversation.map((message, index) => (
-  <Typography key={index} className={`message ${message.sender === 'user' ? 'message-user': ''}`} variant="body1" component="div" sx={{ 
-    color: 'text.primary',
+  <Typography key={index} className={`message ${message.sender === 'user' ? 'message-user': ''}`} variant="body1" component="div"
+  ref={index === conversation.length - 1 ? latestMessageRef : null} sx={{ 
+    // color: 'text.primary',
+    color: message.type === 'user' ? 'blue' : 'green',
     overflowWrap: 'break-word',
     maxWidth: '100%',
     padding: '8px',
     fontSize: '1rem',
+    fontWeight: 'bold',
     '@media (max-width:600px)': {
       fontSize: '0.875rem',
     }
   }}>
-    {message.text}
+    {message.type === 'ai' ? formatMessage(message) : message.text}
+    {/* {formatMessage(message)} */}
   </Typography>
 ))}
 
