@@ -16,6 +16,7 @@ import SidebarWithVideo from './SidebarWithVideo';
 import ChatAreaWithVideo from './ChatAreaWithVideo';
 import ChatComponent from './ChatComponent';
 import ChatbotSelectionPage from './ChatbotSelectionPage';
+import OnboardingModal from './OnboardingModal';
 // const AiAvatar = () => (
 //   <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
 //     <img src={Avatar} alt="AI Avatar" style={{ maxWidth: '100%', maxHeight: '100%', float: 'left' }} />
@@ -79,6 +80,7 @@ function App() {
 
         <Route path="/chat/CelestialScribe" element={<Home />} />
       </Routes>
+      <OnboardingModal />
     </Router>
   );
 }

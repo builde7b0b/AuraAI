@@ -1,10 +1,39 @@
 import React, { useState, useRef } from 'react';
-import { Box, Typography, useTheme, IconButton, Menu, MenuItem } from '@mui/material';
+import { Box, Typography, useTheme, IconButton, Menu, MenuItem, SvgIcon } from '@mui/material';
 import AiAvatarImg from './Avatar.png';
 import AiAvatarAnimation from './SidebarAnim.mp4';
 import { Input, Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useEffect } from 'react';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import { keyframes } from '@mui/system';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+
+// Keyframes for flashing effect
+const flash = keyframes`
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+`;
+
+// Custom component for the flashing arrow
+const FlashingArrow = () => {
+  const theme = useTheme();
+
+  return (
+    <SvgIcon
+      sx={{
+        color: theme.palette.secondary.main, // Choose a color that stands out
+        position: 'absolute',
+        top: theme.spacing(1), // Adjust positioning as needed
+        right: theme.spacing(4), // Adjust to align with the IconButton
+        animation: `${flash} 1s linear infinite`, // Apply the flashing animation
+      }}
+    >
+      <ArrowForwardIcon />
+    </SvgIcon>
+  );
+};
 
 const AiAvatar = ({ children}) => {
   const theme = useTheme();
@@ -215,7 +244,8 @@ const AiAvatar = ({ children}) => {
       display: 'flex',
       flexDirection: 'row', // Stack the avatar and the output box horizontally
       alignItems: 'center',
-      // height: '60vh',
+      height: '100vh',
+      overflow: 'hidden',
     }}>
       {/* AI Avatar Video aligned to the left */}
       <div style={{
@@ -272,12 +302,12 @@ const AiAvatar = ({ children}) => {
         <Input
           value={question}
           onChange={handleQuestionChange}
-          placeholder="Type your message..."
+          placeholder="Type your message or Choose a Prompt From the Menu"
           disabled={isLoading}
           sx={{
             height: '80%',
             width: '100%',
-            overflow: 'wrap',
+            overflow: 'visible',
             padding: theme.spacing(1),
             backgroundColor: 'rgba(255, 255, 255, 0.7)',
             borderRadius: theme.shape.borderRadius,
@@ -319,16 +349,16 @@ const AiAvatar = ({ children}) => {
         <p key={index} className={message.type}>{message.text}</p>
       ))} */}
 
-
+      
       <IconButton
       onClick={handleMenuOpen}
       sx={{
         position: 'absolute',
-        top: theme.spacing(2),
+        top: '40%',
         right: theme.spacing(2),
         color: 'white',
       }}
-      >
+      ><FlashingArrow />
       <MenuIcon />
       </IconButton>
       <Menu className="menu"
