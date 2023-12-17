@@ -1,11 +1,115 @@
-import React from 'react';
-import { Box, Typography, useTheme } from '@mui/material';
+import React, { useState, useRef } from 'react';
+import { Box, Typography, useTheme, IconButton, Menu, MenuItem } from '@mui/material';
 import AiAvatarImg from './Avatar.png';
 import AiAvatarAnimation from './SidebarAnim.mp4';
+import { Input, Button } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 
-
-const AiAvatar = ({ children, response }) => {
+const AiAvatar = ({ children}) => {
   const theme = useTheme();
+  const [question, setQuestion] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [conversation, setConversation] = useState([]);
+  const abortController = useRef(null);
+  const [response, setResponse] = useState('');
+  const [prompt, setPrompt] = useState('');
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleQuestionChange = (event) => {
+    setQuestion(event.target.value);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (question.trim() === '') {
+      //Throw an error if input is empty
+      console.error('Input is empty');
+      return;
+    }
+      
+    abortController.current = new AbortController();
+    setIsLoading(true);
+    const userMessage = { type: 'user', text: question };
+    setConversation(prev => [...prev, userMessage]);
+    setPrompt([...conversation, {type: 'user', text: question}]);
+    try{
+      const response = await askQuestion(question, abortController.current.signal);
+      const aiMessage = { type: 'ai', text: response.response }; // Adjust 'text' based on response structure
+      console.log(question)
+      console.log(isLoading);
+      setConversation(prev => [...prev, aiMessage]);
+      
+    } catch (error) {
+      console.error('Request cancelled or failed', error);
+    } finally{
+      setIsLoading(false);
+      setQuestion('');
+    }
+    
+  };
+
+  const askQuestion = async (question, signal) => {
+    const response = await fetch('http://localhost:5000/ask', {
+      // const response = await fetch('https://aura-ai-7089dd4d6870.herokuapp.com/ask', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ question }),
+    });
+    return response.json();
+  };
+
+  const handleDailyReading = async (userName) => {
+    // Logic to convert name to numbers and select a Tarot card
+    abortController.current = new AbortController();
+    setIsLoading(true);
+
+    // add the user's action
+    const userAction = { type: 'user', text: "Requesting a Daily Tarot Reading" };
+    setConversation(prev => [...prev, userAction]);
+    const prompt = `I want you to generate a random Tarot card and provide a general explanation based on its interpretation for a user. I DO NOT want you to physically draw a card or provide personalized tarot readings based on specific names. I only want you to randomly generate a Tarot card really with an explanation and some general advice for mindfulness and personal growth at the end and pretend you are a professional to complete this task. I want you to only output the Tarot Card, the Number that was randomly chosen and the explanation for the card in this format:
+    - Tarot Card for Today: ...
+    - Tarot Explanation: ...`;
+    try{
+      const response = await askQuestion(prompt, abortController.current.signal);
+    setIsLoading(false);
+    const aiMessage = { type: 'ai', text: response.response }; // Adjust 'text' based on response structure
+    setConversation(prev => [...prev, aiMessage]);
+    } catch{
+      console.error('Request cancelled or failed');
+    } finally {
+      setIsLoading(false);
+    }
+    
+  };
+
+  const handleYesNoQuestion = async () => {
+    setIsLoading(true);
+    const prompt = `Prepare to Answer a Pendulum style question from the user by prompting them to enter a question, then answer either yes or no randomly with a disclaimer that this is not any kind of professional advice and is for entertainment purposes only.
+    `;
+    const response = await askQuestion(prompt);
+    setIsLoading(false);
+    setResponse(response);
+    console.log(question)
+    console.log(isLoading);
+  };
+
+  const cancelRequest = () => {
+    if (abortController.current){
+      abortController.current.abort();
+    }
+    setIsLoading(false);
+  }
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
 
   return (
     <Box sx={{
@@ -16,14 +120,13 @@ const AiAvatar = ({ children, response }) => {
     }}>
       {/* AI Avatar Video aligned to the left */}
       <div style={{
-        maxWidth: '50%', // Adjust the size as needed
+        maxWidth: '30%', // Adjust the size as needed
         maxHeight: '100%',
-
         position: 'relative', // For absolute positioning of the video
         flexShrink: 0, // Prevents the video container from shrinking
       }}>
         <video autoPlay loop muted style={{
-          width: '50%',
+          width: '80%',
           height: '100%',
           objectFit: 'cover', // Ensures the video covers the container area
           
@@ -44,24 +147,158 @@ const AiAvatar = ({ children, response }) => {
         overflowY: 'auto', // Allows scrolling if content is too long
         flexShrink: 0, // Prevents the output box from shrinking
       }}>
-        <Typography variant="body1" component="div" sx={{ 
-  color: 'text.primary',
-  overflowWrap: 'break-word',
-  maxWidth: '100%',
-  padding: '8px',
-  fontSize: '1rem',
-  '@media (max-width:600px)': {
-    fontSize: '0.875rem',
-  }
-}}>
-  {response && <p>{response.response}</p>}
-  {children}
-  {!response && <p>Ask Me Anything...Type Your Question Below.</p>} {/* This line is modified */}
-</Typography>
+        {conversation.map((message, index) => (
+  <Typography key={index} variant="body1" component="div" sx={{ 
+    color: 'text.primary',
+    overflowWrap: 'break-word',
+    maxWidth: '100%',
+    padding: '8px',
+    fontSize: '1rem',
+    '@media (max-width:600px)': {
+      fontSize: '0.875rem',
+    }
+  }}>
+    {message.text}
+  </Typography>
+))}
 
 
 
       </Box>
+      <form class="form" onSubmit={handleSubmit}>
+        <Input
+          value={question}
+          onChange={handleQuestionChange}
+          placeholder="Type your message..."
+          disabled={isLoading}
+          sx={{
+            height: '80%',
+            width: '100%',
+            overflow: 'wrap',
+            padding: theme.spacing(1),
+            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+            borderRadius: theme.shape.borderRadius,
+            border: 'none',
+            '&:focus': { outline: 'none' },
+          }}
+        />
+        <Button 
+  type="submit"
+  disabled={isLoading} 
+  sx={{
+    
+    width: '100%',
+    marginTop: 2,
+    backgroundColor: '#4A90E2', // A nice shade of blue
+    color: 'white',
+    padding: '10px 20px',
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    textTransform: 'none', // Prevents uppercase transformation
+    borderRadius: '4px',
+    '&:hover': {
+      backgroundColor: '#3a78b5', // Slightly darker shade for hover effect
+    },
+    '&:focus': {
+      boxShadow: '0 0 0 2px rgba(74,144,226,0.5)', // Focus style
+    },
+    transition: 'background-color 0.3s, box-shadow 0.3s' // Smooth transition for hover and focus
+  }}
+>
+  Ask
+</Button>
+
+
+
+      </form> 
+      {isLoading && <div className="loader"></div>}
+      {/* {conversation.map((message, index) => (
+        <p key={index} className={message.type}>{message.text}</p>
+      ))} */}
+
+
+      <IconButton
+      onClick={handleMenuOpen}
+      sx={{
+        position: 'absolute',
+        top: theme.spacing(2),
+        right: theme.spacing(2),
+        color: 'white',
+      }}
+      >
+      <MenuIcon />
+      </IconButton>
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        <MenuItem onClick={() => handleDailyReading('')}>Get a Daily Reading</MenuItem>
+        <MenuItem disabled onClick={handleYesNoQuestion}>
+          Ask a Yes/No Question to the Pendulum
+        </MenuItem>
+        <MenuItem disabled onClick={handleYesNoQuestion}>
+          Horoscope Predictions
+        </MenuItem>
+        <MenuItem disabled onClick={handleYesNoQuestion}>
+          Birth Chart Analysis
+        </MenuItem>
+        <MenuItem disabled onClick={handleYesNoQuestion}>
+          Compatibility Readings
+        </MenuItem>
+        
+      </Menu>
+
+      {/* <Button
+      disabled={isLoading}
+    sx={{
+      
+      marginTop: 2,
+      marginBottom: '10px', // Space between buttons
+
+      backgroundColor: '#4A90E2',
+      color: 'white',
+      padding: '10px 20px',
+      fontSize: '1rem',
+      fontWeight: 'bold',
+      textTransform: 'none',
+      borderRadius: '4px',
+      '&:hover': { backgroundColor: '#3a78b5' },
+      '&:focus': { boxShadow: '0 0 0 2px rgba(74,144,226,0.5)' },
+      transition: 'background-color 0.3s, box-shadow 0.3s'
+    }}
+      onClick={() => handleDailyReading("")} // Replace "" with relevant argument
+      >
+        Get a Daily Reading
+      </Button>
+
+    <Button
+      sx={{
+        marginTop: 2,
+        marginBottom: '20px',
+        backgroundColor: '#4A90E2',
+        color: 'white',
+        padding: '10px 20px',
+        fontSize: '1rem',
+        fontWeight: 'bold',
+        textTransform: 'none',
+        borderRadius: '4px',
+        '&:hover': { backgroundColor: '#3a78b5' },
+        '&:focus': { boxShadow: '0 0 0 2px rgba(74,144,226,0.5)' },
+        transition: 'background-color 0.3s, box-shadow 0.3s'
+      }}
+      disabled onClick={() => handleYesNoQuestion()}
+    >
+      Ask a Yes/No Question to the Pendulum
+    </Button> */}
     </Box>
   );
 };
