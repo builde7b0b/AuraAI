@@ -12,7 +12,7 @@ const AiAvatar = ({ children}) => {
   const [conversation, setConversation] = useState([]);
   const abortController = useRef(null);
   const [response, setResponse] = useState('');
-  const [prompt, setPrompt] = useState('');
+  // const [prompt, setPrompt] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleQuestionChange = (event) => {
@@ -31,7 +31,7 @@ const AiAvatar = ({ children}) => {
     setIsLoading(true);
     const userMessage = { type: 'user', text: question };
     setConversation(prev => [...prev, userMessage]);
-    setPrompt([...conversation, {type: 'user', text: question}]);
+    // setPrompt([...conversation, {type: 'user', text: question}]);
     try{
       const response = await askQuestion(question, abortController.current.signal);
       const aiMessage = { type: 'ai', text: response.response }; // Adjust 'text' based on response structure
@@ -95,6 +95,48 @@ const AiAvatar = ({ children}) => {
     console.log(isLoading);
   };
 
+  const getBirthChart = async () => {
+    //prompt the user for their birth details 
+    const userBirthDetails = `Please enter your birth date, time and location in the following format: MM/DD/YYYY HH:MM AM/PM City, State, Country`;
+
+    //add this request to the conversation
+    setConversation(prev => [...prev, { type: 'user', text: userBirthDetails}]);
+
+    const birthDetails = await getUserInput();
+
+    abortController.current = new AbortController();
+    setIsLoading(true);
+
+    const prompt = `Generate a detailed astrological birth chart analysis based on the following details:
+    - Birth Date: ${birthDetails.date}
+    - Birth Time: ${birthDetails.time}
+    - Birth Location: ${birthDetails.location} `
+
+    try {
+      const response = await askQuestion(prompt, abortController.current.signal);
+      setIsLoading(false);
+      const aiMessage = { type: 'ai', text: response.response };
+      setConversation(prev => [...prev, aiMessage]);
+    } catch {
+      console.error('Request cancelled or failed');
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const handleUserInputSubmit = (inputData) => {
+    getBirthChart(inputData);
+    
+  }
+
+  const getUserInput = () => {
+    const userDetails = prompt("Please enter your birth details (Date, Time, Location)");
+    if (!userDetails) return null;
+    const [date, time, location] = userDetails.split(',').map(detail => detail.trim());
+    return { date, time, location };
+  };
+  
+
   const cancelRequest = () => {
     if (abortController.current){
       abortController.current.abort();
@@ -137,7 +179,7 @@ const AiAvatar = ({ children}) => {
       </div>
 
       {/* Output Box for AI responses */}
-      <Box sx={{
+      <Box className="output-box" sx={{
         maxWidth: '40%', // Adjust the size as needed
         maxHeight: '100%',
         // padding: theme.spacing(2),
@@ -148,7 +190,7 @@ const AiAvatar = ({ children}) => {
         flexShrink: 0, // Prevents the output box from shrinking
       }}>
         {conversation.map((message, index) => (
-  <Typography key={index} variant="body1" component="div" sx={{ 
+  <Typography key={index} className={`message ${message.sender === 'user' ? 'message-user': ''}`} variant="body1" component="div" sx={{ 
     color: 'text.primary',
     overflowWrap: 'break-word',
     maxWidth: '100%',
@@ -228,7 +270,7 @@ const AiAvatar = ({ children}) => {
       >
       <MenuIcon />
       </IconButton>
-      <Menu
+      <Menu className="menu"
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
@@ -241,64 +283,23 @@ const AiAvatar = ({ children}) => {
           horizontal: 'right',
         }}
       >
-        <MenuItem onClick={() => handleDailyReading('')}>Get a Daily Reading</MenuItem>
-        <MenuItem disabled onClick={handleYesNoQuestion}>
+        <MenuItem className="menu-item daily-reading" onClick={() => handleDailyReading('')}>Get a Daily Reading</MenuItem>
+        <MenuItem className="menu-item" disabled onClick={handleYesNoQuestion}>
           Ask a Yes/No Question to the Pendulum
         </MenuItem>
-        <MenuItem disabled onClick={handleYesNoQuestion}>
+        <MenuItem className="menu-item" disabled onClick={handleYesNoQuestion}>
           Horoscope Predictions
         </MenuItem>
-        <MenuItem disabled onClick={handleYesNoQuestion}>
+        <MenuItem className="menu-item" onClick={getBirthChart}>
           Birth Chart Analysis
         </MenuItem>
-        <MenuItem disabled onClick={handleYesNoQuestion}>
+        <MenuItem className="menu-item" disabled onClick={handleYesNoQuestion}>
           Compatibility Readings
         </MenuItem>
         
       </Menu>
 
-      {/* <Button
-      disabled={isLoading}
-    sx={{
       
-      marginTop: 2,
-      marginBottom: '10px', // Space between buttons
-
-      backgroundColor: '#4A90E2',
-      color: 'white',
-      padding: '10px 20px',
-      fontSize: '1rem',
-      fontWeight: 'bold',
-      textTransform: 'none',
-      borderRadius: '4px',
-      '&:hover': { backgroundColor: '#3a78b5' },
-      '&:focus': { boxShadow: '0 0 0 2px rgba(74,144,226,0.5)' },
-      transition: 'background-color 0.3s, box-shadow 0.3s'
-    }}
-      onClick={() => handleDailyReading("")} // Replace "" with relevant argument
-      >
-        Get a Daily Reading
-      </Button>
-
-    <Button
-      sx={{
-        marginTop: 2,
-        marginBottom: '20px',
-        backgroundColor: '#4A90E2',
-        color: 'white',
-        padding: '10px 20px',
-        fontSize: '1rem',
-        fontWeight: 'bold',
-        textTransform: 'none',
-        borderRadius: '4px',
-        '&:hover': { backgroundColor: '#3a78b5' },
-        '&:focus': { boxShadow: '0 0 0 2px rgba(74,144,226,0.5)' },
-        transition: 'background-color 0.3s, box-shadow 0.3s'
-      }}
-      disabled onClick={() => handleYesNoQuestion()}
-    >
-      Ask a Yes/No Question to the Pendulum
-    </Button> */}
     </Box>
   );
 };
