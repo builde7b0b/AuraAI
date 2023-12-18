@@ -17,6 +17,8 @@ import ChatAreaWithVideo from './ChatAreaWithVideo';
 import ChatComponent from './ChatComponent';
 import ChatbotSelectionPage from './ChatbotSelectionPage';
 import OnboardingModal from './OnboardingModal';
+import HeroSection from './Hero';
+import LandingPage from './LandingPage';
 // const AiAvatar = () => (
 //   <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
 //     <img src={Avatar} alt="AI Avatar" style={{ maxWidth: '100%', maxHeight: '100%', float: 'left' }} />
@@ -73,8 +75,9 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/select-chatbot" element={<ChatbotSelectionPage />} />
+        <Route path="/chat/ElvenAI" element={<Home />} />
         
         <Route path="/chat/PendulumProphet" element={<Home />} />
 
