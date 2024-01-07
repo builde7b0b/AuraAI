@@ -8,6 +8,30 @@ import { useEffect } from 'react';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { keyframes } from '@mui/system';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import './index.css'
+import LensBlurIcon from '@mui/icons-material/LensBlur';
+import Button1 from './Button1-removebg-preview.png'
+import Button2 from './Button2-removebg-preview.png'
+import Button3 from './Button3-removebg-preview.png'
+
+
+const LoadingOverlay = () => (
+  <div style={{
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000, // Ensure it's above everything else
+  }}>
+    {/* Add a spinner or any loading indicator here */}
+    <div className="loader"></div>
+  </div>
+);
 
 // Keyframes for flashing effect
 const flash = keyframes`
@@ -168,14 +192,11 @@ const AiAvatar = ({ children}) => {
   };
 
   const getBirthChart = async () => {
-   
+    const userBirthDetails = `Please enter your birth date, time and location in the following format: MM/DD/YYYY HH:MM AM/PM City, State, Country`;
+  
     const birthDetails = await getUserInput();
-    
 
     if(birthDetails){
-       //prompt the user for their birth details 
-    const userBirthDetails = `Please enter your birth date, time and location in the following format: MM/DD/YYYY HH:MM AM/PM City, State, Country`;
-
     //add this request to the conversation
     setConversation(prev => [...prev, { type: 'user', text: userBirthDetails}]);
       abortController.current = new AbortController();
@@ -233,10 +254,33 @@ const AiAvatar = ({ children}) => {
   };
 
   useEffect(() => {
-    if (latestMessageRef.current){
-      latestMessageRef.current.scrollIntoView({ smooth: true });
+    if (latestMessageRef.current) {
+      const element = latestMessageRef.current;
+      const chatBoxContainer = element.closest('.output-box'); // Replace with your chat box container's class or ID
+      if (chatBoxContainer) {
+        // Calculate the position to scroll to within the container
+        const elementPosition = element.offsetTop;
+        const containerScrollPosition = elementPosition - (chatBoxContainer.clientHeight / 2) + (element.clientHeight / 2);
+  
+        // Scroll the container to the calculated position
+        chatBoxContainer.scrollTo({
+          top: containerScrollPosition,
+          behavior: 'smooth'
+        });
+      }
+      // Calculate the position to scroll to
+      // (element's top position + half its height) - half the screen height
+      const elementPosition = element.offsetTop + (element.clientHeight / 2);
+      const offsetPosition = elementPosition - (window.innerHeight / 2);
+  
+      // Scroll to the calculated position
+      // window.scrollTo({
+      //   top: offsetPosition,
+      //   behavior: 'smooth'
+      // });
     }
   }, [conversation]);
+  
 
 
   return (
@@ -254,6 +298,15 @@ const AiAvatar = ({ children}) => {
         position: 'relative', // For absolute positioning of the video
         flexShrink: 0, // Prevents the video container from shrinking
       }}>
+        {/* Buttons Above */}
+  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
+    <button style={{ marginRight: '5px' }}>
+      <img src="/path-to-your-image1.jpg" alt="Button 1" style={{ width: '100%', maxWidth: '50px', height: 'auto' }} />
+    </button>
+    <button>
+      <img src="/path-to-your-image2.jpg" alt="Button 2" style={{ width: '100%', maxWidth: '50px', height: 'auto' }} />
+    </button>
+  </div>
         <video autoPlay loop muted style={{
           width: '80%',
           height: '100%',
@@ -263,34 +316,68 @@ const AiAvatar = ({ children}) => {
           <source src={AiAvatarAnimation} type="video/mp4" />
           Your browser does not support the video tag.
         </video>
+         {/* Buttons Below */}
+  <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+    <button style={{ marginRight: '5px' }}>
+      <img src="/path-to-your-image3.jpg" alt="Button 3" style={{ width: '100%', maxWidth: '50px', height: 'auto' }} />
+    </button>
+    <button>
+      <img src={Button3} alt="Button 4" style={{ width: '100%', maxWidth: '50px', height: 'auto' }} />
+    </button>
+  </div>
       </div>
+      
 
       {/* Output Box for AI responses */}
+      {isLoading && <LoadingOverlay />}
       <Box className="output-box" sx={{
-        maxWidth: '40%', // Adjust the size as needed
-        maxHeight: '100%',
+        maxWidth: '60%', // Adjust the size as needed
+        maxHeight: '75vh',
         // padding: theme.spacing(2),
         backgroundColor: 'rgba(255, 255, 255, 0.7)', // Slightly transparent white background
         // marginLeft: theme.spacing(2), // Adds space between the avatar and the output box
         borderRadius: theme.shape.borderRadius, // Optional: rounds the corners of the box
         overflowY: 'auto', // Allows scrolling if content is too long
         flexShrink: 0, // Prevents the output box from shrinking
+        marginTop: 'auto',
+        paddingTop: 'auto'
       }}>
         {conversation.map((message, index) => (
   <Typography key={index} className={`message ${message.sender === 'user' ? 'message-user': ''}`} variant="body1" component="div"
   ref={index === conversation.length - 1 ? latestMessageRef : null} sx={{ 
     // color: 'text.primary',
-    color: message.type === 'user' ? 'blue' : 'green',
+    color: message.type === 'user' ? '#007bff' : '#28a745',
     overflowWrap: 'break-word',
     maxWidth: '100%',
     padding: '8px',
-    fontSize: '1rem',
+    fontSize: '1.8rem',
     fontWeight: 'bold',
+    fontFamily: 'Fairies',
+    backgroundColor: '#f8f9fa',
+    borderRadius: '8px',
+    boxShadow: '0px 2px 4px rgba(0,0,0,0.1)',
+    marginBottom: '16px',
     '@media (max-width:600px)': {
       fontSize: '0.875rem',
+    },
+    transition: 'all 0.3s ease-in-out', // Smooth transition for hover effects
+    '@media (max-width:600px)': {
+      fontSize: '0.875rem',
+    },
+    '&:hover': {
+      backgroundColor: '#e2e6ea', // Slightly change background color on hover
+      transform: 'scale(1.02)', // Slightly increase size
+      boxShadow: '0px 4px 8px rgba(0,0,0,0.2)', // Intensify shadow
     }
   }}>
-    {message.type === 'ai' ? formatMessage(message) : message.text}
+    {/* {message.type === 'ai' ? "ELVEN: " + formatMessage(message) : message.text} */}
+    {
+  message.type === 'ai' ? <div>
+  <span>ELVEN: </span>
+  {formatMessage(message)}
+</div>  : message.text
+}
+
     {/* {formatMessage(message)} */}
   </Typography>
 ))}
@@ -298,8 +385,8 @@ const AiAvatar = ({ children}) => {
 
 
       </Box>
-      <form class="form" onSubmit={handleSubmit}>
-        <Input
+      {/* <form class="form" onSubmit={handleSubmit}> */}
+        {/* <Input
           value={question}
           onChange={handleQuestionChange}
           placeholder="Type your message or Choose a Prompt From the Menu"
@@ -314,8 +401,8 @@ const AiAvatar = ({ children}) => {
             border: 'none',
             '&:focus': { outline: 'none' },
           }}
-        />
-        <Button 
+        /> */}
+        {/* <Button 
   type="submit"
   disabled={isLoading} 
   sx={{
@@ -339,11 +426,11 @@ const AiAvatar = ({ children}) => {
   }}
 >
   Ask
-</Button>
+        </Button> */}
 
 
 
-      </form> 
+      {/* </form>  */}
       {isLoading && <div className="loader"></div>}
       {/* {conversation.map((message, index) => (
         <p key={index} className={message.type}>{message.text}</p>
@@ -355,11 +442,47 @@ const AiAvatar = ({ children}) => {
       sx={{
         position: 'absolute',
         top: '40%',
-        right: theme.spacing(2),
+        right: theme.spacing(1),
         color: 'white',
+
+        '@media screen and (max-width: 400px)': {
+          position: 'absolute',
+          top: '20%',
+          left: theme.spacing(10),
+          color: 'white',
+          
+        },
+        
       }}
-      ><FlashingArrow />
-      <MenuIcon />
+      ><FlashingArrow
+      sx={{
+        position: 'absolute',
+        top: '40%',
+        right: theme.spacing(1),
+        
+        
+      }} />
+      <LensBlurIcon sx={{ 
+        fontSize: '3rem', // Adjust the size as needed
+        color: 'blue', // Change the color if desired
+        // Add any other styles you want
+        paddingLeft: '5px',
+
+        // Responsive adjustments
+  '@media screen and (max-width: 800px)': {
+    fontSize: '2rem', // Smaller size for mobile screens
+    position: 'absolute', // Positioning the icon
+    left: 3, // Moving it to the left
+    top: 10, // Adjust the top as necessary
+  },
+  '@media screen and (max-width: 400px)': {
+    fontSize: '4rem', // Smaller size for mobile screens
+    position: 'absolute', // Positioning the icon
+    left: 2, // Moving it to the left
+    top: 15, // Adjust the top as necessary
+  },
+      }} />
+
       </IconButton>
       <Menu className="menu"
         anchorEl={anchorEl}
@@ -386,6 +509,9 @@ const AiAvatar = ({ children}) => {
         </MenuItem>
         <MenuItem className="menu-item" disabled onClick={handleYesNoQuestion}>
           Compatibility Readings
+        </MenuItem>
+        <MenuItem className="menu-item" disabled onClick={handleYesNoQuestion}>
+          Export Current Chat
         </MenuItem>
         
       </Menu>

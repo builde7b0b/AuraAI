@@ -28,16 +28,16 @@ const FAQs = () => {
 
   return (
     <Box sx={{ padding: '50px', backgroundColor: '#f5f5f5' }}>
-      <Typography variant="h4" sx={{ textAlign: 'center', marginBottom: '30px' }}>
+      <Typography variant="h4" sx={{fontFamily: 'Fairies', textAlign: 'center', marginBottom: '30px' }}>
         FAQs
       </Typography>
       {faqs.map((faq, index) => (
         <Accordion key={index}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>{faq.question}</Typography>
+            <Typography sx={{fontWeight:'bold'}}>{faq.question}</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography>
+            <Typography sx={{color:'#9a5636'}}>
               {faq.answer}
             </Typography>
           </AccordionDetails>

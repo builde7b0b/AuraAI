@@ -4,16 +4,18 @@ import SidebarWithVideo from './SidebarWithVideo';
 import ChatArea from './ChatArea';
 import AiAvatar from './AIAvatar';
 import HeaderBG from './HeaderBG.png';
+import OnboardingModal from './OnboardingModal';
+import NavigationBar from './NagivationBar';
 
 const Home = () => {
   const [response, setResponse] = useState('');
 
   return (
-    <Box sx={{ backgroundColor: 'black', flexGrow: 1 }}>
+    <><NavigationBar /><Box sx={{ backgroundColor: 'black', flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar sx={{ backgroundImage: `url(${HeaderBG})` }}>
-        <Toolbar sx={{ backgroundImage: `url(${HeaderBG})` }}/>
-        
+          <Toolbar sx={{ backgroundImage: `url(${HeaderBG})` }} />
+
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {/* Spiritual Chatbot */}
           </Typography>
@@ -23,9 +25,11 @@ const Home = () => {
       <Box sx={{ marginLeft: '15%' }}>
         <AiAvatar response={response} />
         <ChatArea setResponse={setResponse} />
-       
+
       </Box>
-    </Box>
+      <OnboardingModal />
+    </Box></>
+    
   );
 };
 

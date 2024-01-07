@@ -70,11 +70,14 @@ const ChatArea = ({setResponse}, {setPrompt}) => {
         alignItems: 'center',
         // position: 'relative',
         paddingTop: '10px', // Add some padding at the top
+        
       }}
     >
       
       
     </Box>
+
+    
   );
 };
 

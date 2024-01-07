@@ -19,6 +19,8 @@ import ChatbotSelectionPage from './ChatbotSelectionPage';
 import OnboardingModal from './OnboardingModal';
 import HeroSection from './Hero';
 import LandingPage from './LandingPage';
+import PrivacyPolicy from './legal/PrivacyPolicy';
+import TermsOfService from './legal/TermsOfService';
 // const AiAvatar = () => (
 //   <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
 //     <img src={Avatar} alt="AI Avatar" style={{ maxWidth: '100%', maxHeight: '100%', float: 'left' }} />
@@ -82,8 +84,10 @@ function App() {
         <Route path="/chat/PendulumProphet" element={<Home />} />
 
         <Route path="/chat/CelestialScribe" element={<Home />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
       </Routes>
-      <OnboardingModal />
+      
     </Router>
   );
 }

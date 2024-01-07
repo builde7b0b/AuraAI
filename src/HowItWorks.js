@@ -1,8 +1,10 @@
 import React from 'react';
-import { Box, Typography, Step, Stepper, StepLabel, StepContent, Grid, Paper } from '@mui/material';
-import HowItWorksImage from './Avatar.png'; // Replace with your image path
+import {Button, Box, Typography, Step, Stepper, StepLabel, StepContent, Grid, Paper } from '@mui/material';
+import HowItWorksImage from './assets/Avatar_animation.gif'; // Replace with your image path
+import { useNavigate } from 'react-router';
 
 const HowItWorks = () => {
+  const navigate = useNavigate();
   const steps = [
     { label: "Open Elven AI", description: "Click on the chat icon to start." },
     { label: "Choose a Prompt", description: "Select from tarot readings, horoscopes, and more." },
@@ -11,21 +13,23 @@ const HowItWorks = () => {
 
   return (
     <Box sx={{ padding: '50px' }}>
-      <Typography variant="h4" sx={{ textAlign: 'center', marginBottom: '30px' }}>
+      <Typography variant="h4" sx={{ fontFamily: 'Fairies', textAlign: 'center', marginBottom: '30px' }}>
         How It Works
       </Typography>
       <Grid container spacing={2} justifyContent="center">
         <Grid item xs={12} md={6}>
       <Stepper orientation="vertical">
         {steps.map((step, index) => (
-          <Step key={step.label} active={true}>
-            <StepLabel>{step.label}</StepLabel>
+          <Step  key={step.label} active={true}>
+            <StepLabel >{step.label}</StepLabel>
             <StepContent>
-              <Typography>{step.description}</Typography>
+              <Typography sx={{fontWeight: 'bold'}}>{step.description}</Typography>
             </StepContent>
+            
           </Step>
         ))}
       </Stepper>
+      <Button onClick={() => navigate('/chat/ElvenAI')} variant="contained" sx={{backgroundColor:'#9a5636', fontWeight:'bold'}} color="primary">Ask Your First Question FREE!</Button>
       </Grid>
       <Grid item xs={12} md={6}>
           <Paper elevation={3} sx={{ padding: '20px' }}>

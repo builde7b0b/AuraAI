@@ -11,3 +11,8 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+@font-face {
+  font-family: 'Fairies';
+  src: url('./assets/fonts/Fairies.otf') format('opentype');
+}

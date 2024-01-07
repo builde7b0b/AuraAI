@@ -9,7 +9,7 @@ const AboutSection = () => {
       color: '#3a3a3c', // Suitable text color
       textAlign: 'center',
     }}>
-      <Typography variant="h4" sx={{ marginBottom: '30px', fontWeight: 'bold' }}>
+      <Typography variant="h4" sx={{ fontFamily: 'Fairies', marginBottom: '30px', fontWeight: 'bold' }}>
         About Elven AI
       </Typography>
       <Typography variant="body1" sx={{ marginBottom: '20px' }}>

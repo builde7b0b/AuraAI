@@ -13,7 +13,7 @@ import InsightsIcon from '@mui/icons-material/Insights'; // For Insightful Analy
 const FeaturesOverview = () => {
   return (
     <Box sx={{ padding: '50px', backgroundColor: '#f5f5f5' }}>
-      <Typography variant="h4" sx={{ textAlign: 'center', marginBottom: '30px' }}>
+      <Typography variant="h4" sx={{ fontFamily: 'Fairies', textAlign: 'center', marginBottom: '30px' }}>
         Why Choose Elven AI?
       </Typography>
       <Grid container spacing={4} justifyContent="center">
@@ -22,7 +22,7 @@ const FeaturesOverview = () => {
           <Card sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
             <CardMedia component={AutoStoriesIcon} sx={{ fontSize: '80px' }} />
             <CardContent>
-              <Typography variant="h6">Tarot Readings</Typography>
+              <Typography sx={{fontWeight: 'bold'}} variant="h6">Tarot Readings</Typography>
               <Typography variant="body1">Experience personalized tarot readings and gain insights into your life.</Typography>
             </CardContent>
           </Card>
@@ -31,7 +31,7 @@ const FeaturesOverview = () => {
           <Card sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
             <CardMedia component={SpaIcon} sx={{ fontSize: '80px', color: 'green' }} />
             <CardContent>
-              <Typography variant="h6">Spiritual Healing</Typography>
+              <Typography sx={{fontWeight: 'bold'}}  variant="h6">Spiritual Healing</Typography>
               <Typography variant="body1">Engage in sessions promoting inner peace and spiritual wellness.</Typography>
             </CardContent>
           </Card>
@@ -40,7 +40,7 @@ const FeaturesOverview = () => {
           <Card sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
             <CardMedia component={InsightsIcon} sx={{ fontSize: '80px', color: 'purple' }} />
             <CardContent>
-              <Typography variant="h6">Insightful Analysis</Typography>
+              <Typography sx={{fontWeight: 'bold'}}  variant="h6">Insightful Analysis</Typography>
               <Typography variant="body1">Gain deep insights into your personal and spiritual growth.</Typography>
             </CardContent>
           </Card>
